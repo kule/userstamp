@@ -2,17 +2,7 @@ module Ddb #:nodoc:
   module Userstamp
     # Determines what default columns to use for recording the current stamper.
     # By default this is set to false, so the plug-in will use columns named
-    # <tt>creator_id</tt>, <tt>updater_id</tt>, and <tt>deleter_id</tt>.
-    #
-    # To turn compatibility mode on, place the following line in your environment.rb
-    # file:
-    #
-    #   Ddb::Userstamp.compatibility_mode = true
-    #
-    # This will cause the plug-in to use columns named <tt>created_by</tt>,
-    # <tt>updated_by</tt>, and <tt>deleted_by</tt>.
-    mattr_accessor :compatibility_mode
-    @@compatibility_mode = false
+    # <tt>created_by_id</tt>, <tt>updated_by_id</tt>, and <tt>deleted_by_id</tt>.
 
     # Extends the stamping functionality of ActiveRecord by automatically recording the model
     # responsible for creating, updating, and deleting the current object. See the Stamper
@@ -32,19 +22,16 @@ module Ddb #:nodoc:
           # Which class is responsible for stamping? Defaults to :user.
           class_attribute  :stamper_class_name
 
-          # What column should be used for the creator stamp?
-          # Defaults to :creator_id when compatibility mode is off
-          # Defaults to :created_by when compatibility mode is on
+          # What column should be used for the created_by stamp?
+          # Defaults to :created_by_id
           class_attribute  :creator_attribute
 
-          # What column should be used for the updater stamp?
-          # Defaults to :updater_id when compatibility mode is off
-          # Defaults to :updated_by when compatibility mode is on
+          # What column should be used for the updated_by stamp?
+          # Defaults to :updated_by_id
           class_attribute  :updater_attribute
 
-          # What column should be used for the deleter stamp?
-          # Defaults to :deleter_id when compatibility mode is off
-          # Defaults to :deleted_by when compatibility mode is on
+          # What column should be used for the deleted_by stamp?
+          # Defaults to :deleted_by_id
           class_attribute  :deleter_attribute
 
           self.stampable
@@ -68,9 +55,9 @@ module Ddb #:nodoc:
         def stampable(options = {})
           defaults  = {
                         :stamper_class_name => :user,
-                        :creator_attribute  => Ddb::Userstamp.compatibility_mode ? :created_by : :creator_id,
-                        :updater_attribute  => Ddb::Userstamp.compatibility_mode ? :updated_by : :updater_id,
-                        :deleter_attribute  => Ddb::Userstamp.compatibility_mode ? :deleted_by : :deleter_id
+                        :creator_attribute  => :created_by_id,
+                        :updater_attribute  => :updated_by_id,
+                        :deleter_attribute  => :deleted_by_id
                       }.merge(options)
 
           self.stamper_class_name = defaults[:stamper_class_name].to_sym
@@ -79,10 +66,10 @@ module Ddb #:nodoc:
           self.deleter_attribute  = defaults[:deleter_attribute].to_sym
 
           class_eval do
-            belongs_to :creator, :class_name => self.stamper_class_name.to_s.singularize.camelize,
+            belongs_to :created_by, :class_name => self.stamper_class_name.to_s.singularize.camelize,
                                  :foreign_key => self.creator_attribute
                                  
-            belongs_to :updater, :class_name => self.stamper_class_name.to_s.singularize.camelize,
+            belongs_to :updated_by, :class_name => self.stamper_class_name.to_s.singularize.camelize,
                                  :foreign_key => self.updater_attribute
                                  
             before_save     :set_updater_attribute

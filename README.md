@@ -12,7 +12,6 @@ The `model_stamper` method is used in models that are responsible for creating, 
 deleting other objects. The `stampable` method is used in models that are subject to being
 created, updated, or deleted by 'stampers'.
 
-
 Installation
 ------------
 
@@ -162,13 +161,7 @@ class Post < ActiveRecord::Base
 end
 ```
 
-If you are upgrading your application from the old version of Userstamp, there is a compatibility
-mode to have the plug-in use the old "_by" columns by default. To enable this mode, add the
-following line to the Rails.root/config/initializers/userstamp.rb file:
-
-```ruby
-Ddb::Userstamp.compatibility_mode = true
-```
+NOTE This version doesn't not have the compatiblity mode - it defaults to :created_by_id etc
 
 If you are having a difficult time getting the Userstamp plug-in to work, I recommend you checkout
 the sample application that I created. You can find this application on [GitHub](http://github.com/delynn/userstamp_sample)
